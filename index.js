@@ -10,6 +10,10 @@ let messages = [];
 
 app.post('/sign-up', (req, res) => {
     const {username, avatar} = req.body
+    if(username.length === 0 || avatar.length === 0) {
+        return res.sendStatus(400).send("Todos os campos são necessários")
+    }
+
     users.push({
         username: username,
         avatar: avatar
@@ -20,6 +24,10 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/messages', (req, res) => {
     const {message, username} = req.body
+    if(message.length === 0 || username.length === 0) {
+        return res.sendStatus(400).send("Todos os campos são necessários")
+    }
+
     let avatar = users.find(element => element.username === username);
     avatar = avatar.avatar;
 
@@ -34,7 +42,19 @@ app.post('/messages', (req, res) => {
 });
   
 app.get('/messages', (req, res) => {
-    res.send(messages.slice(0, 10));
+    let widthMessages = 0
+    if(messages.length >= 10) {
+        widthMessages = messages.length-10        
+    }
+
+    res.send(messages.slice(widthMessages));
+    
+});
+
+app.get('/messages/:username', (req, res) => {
+    const name = req.params.username;
+    let messagesOfUser = messages.filter(element => element.username === name)
+    res.send(messagesOfUser);
 });
 
 
